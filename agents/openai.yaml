@@ -1,0 +1,6 @@
+interface:
+  display_name: "图文混排飞书文档"
+  short_description: "把妙记、视频、PPT 和 Deck 编成可读的图文逐字稿"
+  default_prompt: "Use $creating-illustrated-feishu-doc to turn these Feishu Minutes, meeting notes, videos, audio, PPT/Decks, HTML slides, PDFs, images, transcripts, or Xiaohongshu links into a Zara-style image-text interleaved Feishu document. Default to cleaned prose paragraphs without visible timestamps; keep timestamps only when requested."
+policy:
+  allow_implicit_invocation: true
