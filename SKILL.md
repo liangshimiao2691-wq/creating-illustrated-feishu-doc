@@ -5,6 +5,10 @@ description: Use when the user wants Feishu Minutes, meeting notes, transcripts,
 
 # Creating an Illustrated Feishu Document
 
+## 中文简介
+
+这个 Skill 用于把飞书妙记、会议纪要、视频、音频、PPT、Deck、HTML、PDF、图片和文字整理成图文混排的飞书文档。它解决“画面和讲解对不上、逐句字幕难以阅读、普通总结又丢失原始逻辑”的问题，默认按照“一张关键画面 → 一段对应讲解”的方式编排，并在轻度清理口水词的同时保留事实、数字、观点和因果关系。
+
 ## Purpose
 
 Turn heterogeneous meeting or presentation materials into a readable Feishu document that preserves the source narrative while placing the right visual evidence beside the right passage. The target is Zara's “图文版逐字稿” pattern: section heading → Deck/video frame → matching transcript → next frame → next transcript, with useful captions and provenance.
