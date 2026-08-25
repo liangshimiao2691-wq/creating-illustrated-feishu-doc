@@ -1,90 +1,106 @@
-English | [中文](README_CN.md)
+[中文](README_CN.md) · [Skill specification](SKILL.md)
 
 # Creating Illustrated Feishu Docs
 
-Turn videos, meeting recordings, Feishu Minutes, PPT/Decks, HTML slides, PDFs, images, audio transcripts, and notes into a Zara-style illustrated Feishu document:
+> Turn videos, meetings, slides, transcripts, and screenshots into source-faithful Feishu/Lark documents where each visual is followed by the prose it explains.
 
-> one meaningful visual → one readable matching video稿 paragraph → next visual → next paragraph
+![Xiaohongshu video to illustrated Feishu document](assets/xiaohongshu-to-feishu.png)
 
-## Why this exists
+## Real case study
 
-Normal transcript tools produce a wall of timestamped subtitles. Normal summarizers lose the speaker's reasoning and the visual evidence. This skill connects the two: it preserves what was said, shows the slide or video frame being discussed, and turns fragmented speech into readable prose.
+Input: a 2m49s public Xiaohongshu video, [“How to find vibe-coding product ideas”](http://xhslink.cn/o/5KiCbQ9MxCZ), by **张咋啦**.
+
+The workflow:
+
+1. resolves the public share link and extracts title, author, page captions, and video metadata;
+2. selects nine frames that materially advance the narrative;
+3. aligns each frame with the transcript passage being spoken;
+4. removes filler, repetition, and reader-facing timestamps while preserving claims, examples, technical terms, and causal order.
+
+The result is a shareable Feishu document titled “如何想出 vibe coding 的产品灵感｜Zara 风格图文版.” Readers can understand the method without replaying the full video.
+
+![Privacy-safe reconstruction of the final Feishu document](assets/feishu-output-safe.png)
+
+> The image above is a privacy-safe reconstruction using the real final title, prose, and keyframe. Account identity, browser tabs, desktop content, and temporary media URLs are excluded.
 
 ## What it solves
 
-- A video has a speaker, slides, captions, and screen actions but no usable written artifact.
-- PPT pages and the spoken explanation are separated, so readers cannot tell which words belong to which page.
-- Timestamp-heavy transcripts are hard to read and share.
-- Xiaohongshu share links often look inaccessible or only expose a short link.
-- Meeting materials are scattered across Minutes, recordings, Decks, screenshots, and notes.
+| Raw-material problem | Skill behavior | Reader outcome |
+| --- | --- | --- |
+| Long video, little time | Extract captions and meaningful keyframes | Scan the core argument in minutes |
+| Visuals and narration are separated | Align by timeline and semantics | Each image is followed by its explanation |
+| Cue-level transcript is fragmented | Light cleanup and paragraph merging | Readable prose instead of ASR output |
+| Generic summaries lose evidence | Retain Deck pages, UI states, and video frames | Claims remain traceable to the source |
+| Signed media URLs may leak | Keep download/upload parameters internal | No temporary token in the deliverable |
+
+## Default document pattern
+
+```text
+Topic and reading guide
+
+Section heading
+Visual takeaway
+[keyframe / slide / screenshot]
+one complete matching transcript paragraph
+
+next section…
+```
+
+By default the workflow:
+
+- hides cue-level timestamps and placeholder labels;
+- removes filler, false starts, repeated fragments, and obvious ASR noise;
+- merges adjacent cues into natural paragraphs;
+- preserves facts, names, numbers, technical terms, examples, stance, and causal order;
+- keeps timing internally for alignment and verification;
+- prevents temporary media tokens from reaching captions or prose.
+
+Ask for “逐字稿”, “字幕”, “时间轴”, or “按秒对应” when timestamped cue-level output is required.
 
 ## Supported inputs
 
-- Feishu Minutes, meeting notes, and transcript documents
-- Local or publicly accessible video and audio
-- PPT/PPTX, Feishu Slides, HTML decks, and PDF pages
-- Screenshots, images, captions, subtitles, and plain text
-- Xiaohongshu share links, including `xhslink.cn` links when the public note is accessible
-
-## Default output
-
-The default is a readable prose document, not a raw subtitle dump:
-
-- timestamps and per-cue labels are hidden;
-- filler words, false starts, repeated fragments, and obvious ASR noise are lightly cleaned;
-- adjacent transcript cues are merged into natural paragraphs;
-- facts, names, numbers, technical terms, examples, stance, and causal order are preserved;
-- each visual is placed next to the paragraph it explains;
-- captions describe the visual without exposing temporary media tokens.
-
-Ask for “逐字稿”, “字幕”, “时间轴”, or “按秒对应” when timestamped cue-level output is desired.
+- Feishu Minutes, meeting notes, transcripts, recordings;
+- local or publicly accessible video and audio;
+- PPT/PPTX, Feishu Slides, HTML decks, PDFs;
+- screenshots, images, captions, subtitles, and plain text;
+- public Xiaohongshu share links, including `xhslink.cn` short links.
 
 ## Xiaohongshu handling
 
-The agent resolves the share link itself. It uses a normal GET request with redirect following, then inspects the public note page state for the title, author, poster, signed video stream, and page-provided subtitles. It uses the subtitles as the narrative source and representative video frames as visual evidence when available.
+The agent follows the public redirect itself and inspects the public note state for title, author, poster, video stream, and page-provided captions. Captions become the narrative source and representative frames become visual evidence.
 
-Temporary redirect parameters and signed media URLs remain internal. The workflow does not depend on unrelated third-party downloader services.
+Redirect parameters and signed media URLs remain internal. The workflow does not depend on unrelated third-party downloader services.
+
+## Usage
+
+```text
+Use the illustrated Feishu doc Skill on this Xiaohongshu link.
+Put one cleaned paragraph after every meaningful visual and hide timestamps.
+```
+
+```text
+Turn this meeting recording, PPT, and Feishu Minutes into a Zara-style illustrated document.
+Preserve key numbers, decisions, examples, and the explanation for each slide.
+```
 
 ## Install
-
-### Claude Code / compatible agents
 
 ```bash
 git clone https://github.com/liangshimiao2691-wq/creating-illustrated-feishu-doc.git ~/.claude/skills/creating-illustrated-feishu-doc
 ```
 
-For another agent, place the repository's `SKILL.md` and `references/` folder in that agent's skill directory.
+For another agent, place `SKILL.md`, `references/`, and `agents/` in that agent's Skill directory.
 
-### Feishu output
+A real Feishu document requires a host Agent with Feishu/Lark document access and an authenticated user identity. Without that capability, the workflow can fall back to local Markdown or HTML.
 
-For a real Feishu document, the agent needs access to the Feishu/Lark document capability and an authenticated `lark-cli` user identity. If those are unavailable, the skill can still produce a local Markdown/HTML fallback when the host agent supports file output.
-
-## Usage examples
-
-```text
-Use the illustrated Feishu doc skill on this Xiaohongshu link.
-```
-
-```text
-Turn this meeting recording, PPT, and transcript into a Zara-style Feishu document.
-```
-
-```text
-Make a visual transcript: show each slide, then the cleaned paragraph explaining it.
-```
-
-## Design principles
+## Principles
 
 - source-faithful, not a generic summary;
-- visual evidence before the matching explanation;
+- visual evidence before matching explanation;
 - light oral cleanup, not aggressive rewriting;
 - timestamps retained internally for alignment and verification;
 - no fabricated slide text, transcript, speaker identity, or visual interpretation;
-- public source links preserved, temporary access tokens kept private.
-
-## Search keywords
-
-Illustrated Feishu document, Lark document, Zara-style visual transcript, Feishu Minutes, meeting transcript, video transcript, slide transcript, PPT narration, Deck explanation, HTML deck, Xiaohongshu video, xhslink, subtitles, keyframes, image-text layout.
+- public sources preserved, temporary access parameters protected.
 
 ## License
 
